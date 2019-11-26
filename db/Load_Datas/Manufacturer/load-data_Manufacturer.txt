@@ -1,0 +1,8 @@
+LOAD DATA INFILE 'E:/2ndY/Projets/306-Scrum/Manufacturer.csv'
+INTO TABLE t_manufacturer
+CHARACTER SET "Utf8"
+COLUMNS TERMINATED BY ';'
+LINES TERMINATED BY '\r\n'
+IGNORE 1 LINES
+
+SET idManufacturer=NULL;

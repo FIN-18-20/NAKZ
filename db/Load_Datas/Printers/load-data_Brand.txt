@@ -1,0 +1,8 @@
+LOAD DATA INFILE 'E:/2ndY/Projets/306-Scrum/Printers.csv'
+INTO TABLE t_product
+CHARACTER SET "Utf8"
+COLUMNS TERMINATED BY ';'
+LINES TERMINATED BY '\r\n'
+IGNORE 1 LINES
+(idProduct, proName, idBrand, proPrintSpeedBW,proPrintSpeedCol,proColour,proPrintResX,proPrintResY,proRectoVerso,proPrintTech,proScanResX,proScanResY,proScanSpeedBW,proScanSpeedCol,proLength,proWidth,proHeight,proWeight)
+SET idProduct=NULL;
