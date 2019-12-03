@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `db_printers`
 --
+CREATE DATABASE IF NOT EXISTS `db_printers`;
+USE `db_printers`;
 
 -- --------------------------------------------------------
 
