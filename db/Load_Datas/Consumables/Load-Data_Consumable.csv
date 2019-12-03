@@ -1,0 +1,8 @@
+LOAD DATA INFILE 'E:/2ndY/Projets/306-Scrum/NAKZ-306/doc/data/042-P_consommables.csv'
+INTO TABLE t_consumable
+CHARACTER SET "Utf8"
+COLUMNS TERMINATED BY ';'
+LINES TERMINATED BY '\r\n'
+IGNORE 1 LINES
+(idConsumable,idBrand,conName,conPrice,conType)
+SET idConsumable=NULL
