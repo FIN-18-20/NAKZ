@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  localhost
--- Généré le :  Mar 26 Novembre 2019 à 10:52
+-- Généré le :  Mar 03 Décembre 2019 à 09:44
 -- Version du serveur :  5.7.11
 -- Version de PHP :  7.0.3
 
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `db_printers`
 --
-CREATE DATABASE IF NOT EXISTS `db_printers`;
-USE `db_printers`;
 
 -- --------------------------------------------------------
 
@@ -62,6 +60,44 @@ CREATE TABLE `t_consumable` (
   `idBrand` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Contenu de la table `t_consumable`
+--
+
+INSERT INTO `t_consumable` (`idConsumable`, `conName`, `conPrice`, `conType`, `idBrand`) VALUES
+(1, '415A (C)', 128, 'Toner', 1),
+(2, '415A (CF)', 99.8, 'Toner', 1),
+(3, '415A (M)', 112, 'Toner', 1),
+(4, '415A (Y)', 117, 'Toner', 1),
+(5, '054 H (CF)', 102, 'Toner', 2),
+(6, '054 H (C)', 107, 'Toner', 2),
+(7, '054 H (M)', 107, 'Toner', 2),
+(8, '054 H (Y)', 107, 'Toner', 2),
+(9, 'TK-5240 (CF)', 61, 'Toner', 3),
+(10, 'TK-5240 (C)', 89.6, 'Toner', 3),
+(11, 'TK-5240 (M)', 89.7, 'Toner', 3),
+(12, '203X (CF)', 86.5, 'Toner', 1),
+(13, '973X (CF)', 99.6, 'Cartouche d\'encre', 1),
+(14, 'TN-243BK (CF)', 51.6, 'Toner', 4),
+(15, '102 EcoTank (C)', 12.5, 'Cartouche d\'encre', 5),
+(16, 'Epson EcoTank unlimited printing', 47.1, 'Abonnement', 5),
+(17, '410X (Y,M,C)', 479, 'Toner', 1),
+(18, '106R03480 (CF)', 126, 'Toner', 6),
+(19, 'Xerox Waste Toner Cartridge', 31.4, 'Rechange', 6),
+(20, 'GI-50 (Y)', 14.7, 'Cartouche d\'encre', 2),
+(21, '102 EcoTank (CF)', 20.3, 'Cartouche d\'encre', 5),
+(22, '45862840 (CF)', 57.1, 'Toner', 7),
+(23, 'OKI Transport Band C822', 106, 'Rechange', 7),
+(24, '054 H (CF)', 102, 'Toner', 2),
+(25, 'CLT-P404C (Y,M,C,CF)', 157, 'Toner', 8),
+(26, 'TN-243 Multipack (Y,M,C,CF)', 158, 'Toner', 4),
+(27, 'TN-910BK (CF)', 98.3, 'Toner', 4),
+(28, 'LC-3219XlBK (CF)', 34.6, 'Cartouche d\'encre', 4),
+(29, '953-XL Multipack (Y,M,C,CF)', 107, 'Cartouche d\'encre', 1),
+(30, 'HP Q2510A', 26, 'Papier photo', 1),
+(31, 'TN-910BK (CF)', 98.3, 'Toner', 4),
+(32, '33XL Claria Premium Multipack (Y,M,C,CF)', 89.3, 'Cartouche d\'encre', 5);
+
 -- --------------------------------------------------------
 
 --
@@ -73,6 +109,13 @@ CREATE TABLE `t_customer` (
   `cusFirstName` varchar(50) NOT NULL,
   `cusLastName` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `t_customer`
+--
+
+INSERT INTO `t_customer` (`idCustomer`, `cusFirstName`, `cusLastName`) VALUES
+(1, 'John', 'Lennon');
 
 -- --------------------------------------------------------
 
@@ -86,6 +129,13 @@ CREATE TABLE `t_history` (
   `hisPrice` float UNSIGNED NOT NULL,
   `idProduct` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `t_history`
+--
+
+INSERT INTO `t_history` (`idHistory`, `hisDate`, `hisPrice`, `idProduct`) VALUES
+(1, '2019-12-03', 799.99, 1);
 
 -- --------------------------------------------------------
 
@@ -178,6 +228,13 @@ CREATE TABLE `t_purchase` (
   `purPrice` float UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Contenu de la table `t_purchase`
+--
+
+INSERT INTO `t_purchase` (`idCustomer`, `idProduct`, `purDate`, `purPrice`) VALUES
+(1, 1, '2019-12-03', 599.99);
+
 -- --------------------------------------------------------
 
 --
@@ -210,6 +267,44 @@ CREATE TABLE `t_use` (
   `idConsumable` int(10) UNSIGNED NOT NULL,
   `idProduct` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `t_use`
+--
+
+INSERT INTO `t_use` (`idConsumable`, `idProduct`) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 2),
+(6, 2),
+(7, 2),
+(8, 2),
+(9, 3),
+(10, 3),
+(11, 3),
+(12, 4),
+(13, 5),
+(14, 6),
+(15, 7),
+(16, 7),
+(17, 8),
+(18, 9),
+(19, 9),
+(20, 10),
+(21, 11),
+(22, 12),
+(23, 12),
+(24, 13),
+(25, 14),
+(26, 15),
+(27, 16),
+(28, 17),
+(29, 18),
+(30, 18),
+(31, 19),
+(32, 20);
 
 --
 -- Index pour les tables exportées
@@ -300,32 +395,32 @@ ALTER TABLE `t_use`
 -- AUTO_INCREMENT pour la table `t_brand`
 --
 ALTER TABLE `t_brand`
-  MODIFY `idBrand` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idBrand` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT pour la table `t_consumable`
 --
 ALTER TABLE `t_consumable`
-  MODIFY `idConsumable` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `idConsumable` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 --
 -- AUTO_INCREMENT pour la table `t_customer`
 --
 ALTER TABLE `t_customer`
-  MODIFY `idCustomer` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `idCustomer` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT pour la table `t_history`
 --
 ALTER TABLE `t_history`
-  MODIFY `idHistory` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `idHistory` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT pour la table `t_manufacturer`
 --
 ALTER TABLE `t_manufacturer`
-  MODIFY `idManufacturer` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `idManufacturer` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT pour la table `t_product`
 --
 ALTER TABLE `t_product`
-  MODIFY `idProduct` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `idProduct` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT pour la table `t_supplier`
 --
