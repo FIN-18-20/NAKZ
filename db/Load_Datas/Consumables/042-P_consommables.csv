@@ -1,0 +1,33 @@
+idConsumable;idBrand;conName;conPrice;conType
+1;1;415A (C);128;Toner
+2;1;415A (CF);99.8;Toner
+3;1;415A (M);112;Toner
+4;1;415A (Y);117;Toner
+5;2;054 H (CF);102;Toner
+6;2;054 H (C);107;Toner
+7;2;054 H (M);107;Toner
+8;2;054 H (Y);107;Toner
+9;3;TK-5240 (CF);61;Toner
+10;3;TK-5240 (C);89.6;Toner
+11;3;TK-5240 (M);89.7;Toner
+12;1;203X (CF);86.5;Toner
+13;1;973X (CF);99.6;Cartouche d'encre
+14;4;TN-243BK (CF);51.6;Toner
+15;5;102 EcoTank (C);12.5;Cartouche d'encre
+16;5;Epson EcoTank unlimited printing;47.1;Abonnement
+17;1;410X (Y,M,C);479;Toner
+18;6;106R03480 (CF);126;Toner
+19;6;Xerox Waste Toner Cartridge;31.4;Rechange
+20;2;GI-50 (Y);14.7;Cartouche d'encre
+21;5;102 EcoTank (CF);20.3;Cartouche d'encre
+22;7;45862840 (CF);57.1;Toner
+23;7;OKI Transport Band C822;106;Rechange
+24;2;054 H (CF);102;Toner
+25;8;CLT-P404C (Y,M,C,CF);157;Toner
+26;4;TN-243 Multipack (Y,M,C,CF);158;Toner
+27;4;TN-910BK (CF);98.3;Toner
+28;4;LC-3219XlBK (CF);34.6;Cartouche d'encre
+29;1;953-XL Multipack (Y,M,C,CF);107;Cartouche d'encre
+30;1;HP Q2510A;26;Papier photo
+31;4;TN-910BK (CF);98.3;Toner
+32;5;33XL Claria Premium Multipack (Y,M,C,CF);89.3;Cartouche d'encre
