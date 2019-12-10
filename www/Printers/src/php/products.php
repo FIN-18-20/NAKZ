@@ -20,9 +20,9 @@
             break;
         case "size":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -30,9 +30,9 @@
             break;
         case "weight":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -46,9 +46,9 @@
             break;
         case "printSpeedBW":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -56,9 +56,9 @@
             break;
         case "printSpeedCol":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -66,9 +66,9 @@
             break;
         case "scanResolution":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -76,9 +76,9 @@
             break;
         case "topPrice":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -86,9 +86,9 @@
             break;
         case "priceAndManufacturer":
             $order;
-            if(isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (isset($_POST["order"]) and !empty($_POST["order"])) {
                 $order = $_POST["order"];
-                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC' ;
+                $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
@@ -101,40 +101,39 @@
     if (isset($data) and !empty($data)) {
         $_SESSION["data"] = $data;
         ?>
-            <ul>
+
+            <ul style="list-style: none;">
                 <?php foreach ($data as $product) { ?>
                     <li>
                         <article>
-                            <div>
-                                <h1><?= $product["proName"] . ': ' . $product["braName"] ?></h1>
-                                <p><?= $product["proManufacturer"] ?></p>
-                                <?php
-                                        switch ($_POST["sorting"]) {
-                                            case "size":
-                                                echo '<p> Dimensions: ' . $product["proWidth"] . 'x' . $product["proLength"] . 'x' . $product["proHeight"] . '</p>';
-                                                break;
-                                            case "weight":
-                                                echo '<p>Poids: ' . $product["proWeight"] . '</p>';
-                                                break;
-                                            case "printSpeedBW":
-                                                echo '<p>Vitesse d\'impression (NB): ' . $product["proPrintSpeedBW"] . '</p>';
-                                                break;
-                                            case "printSpeedCol":
-                                                echo '<p>Vitesse d\'impression: ' . $product["proPrintSpeedCol"] . '</p>';
-                                                break;
-                                            case "scanResolution":
-                                                echo '<p> Résolution de scan:' . $product["proScanResX"] . 'x' . $product["proScanResY"] . '</p>';
-                                                break;
-                                            default;
-                                                echo '';
-                                        }
-                                        ?>
-                                    <p><?= $product["proPrice"] . ' CHF' ?></p>
-                                    <p>
-                                        <a href="details.php?idProduct=<?= $product["idProduct"] ?>">Détails</a>
-                                        <a href="consumables.php?idProduct=<?= $product["idProduct"] ?>">Consommables</a>
-                                    </p>
-                            </div>
+                            <h1><?= $product["braName"] . ' ' . $product["proName"] ?></h1>
+                            <p><?= $product["proManufacturer"] ?></p>
+                            <?php
+                                    switch ($_POST["sorting"]) {
+                                        case "size":
+                                            echo '<p> Dimensions: ' . $product["proWidth"] . 'x' . $product["proLength"] . 'x' . $product["proHeight"] . '</p>';
+                                            break;
+                                        case "weight":
+                                            echo '<p>Poids: ' . $product["proWeight"] . '</p>';
+                                            break;
+                                        case "printSpeedBW":
+                                            echo '<p>Vitesse d\'impression (NB): ' . $product["proPrintSpeedBW"] . '</p>';
+                                            break;
+                                        case "printSpeedCol":
+                                            echo '<p>Vitesse d\'impression: ' . $product["proPrintSpeedCol"] . '</p>';
+                                            break;
+                                        case "scanResolution":
+                                            echo '<p> Résolution de scan:' . $product["proScanResX"] . 'x' . $product["proScanResY"] . '</p>';
+                                            break;
+                                        default;
+                                            echo '';
+                                    }
+                                    ?>
+                                <p><?= $product["proPrice"] . ' CHF' ?></p>
+                                <p>
+                                    <a href="details.php?idProduct=<?= $product["idProduct"] ?>">Détails</a>
+                                    <a href="consumables.php?idConsumable=<?= $product["idConsumable"] ?>">Consommables</a>
+                                </p>
                         </article>
                     </li>
                 <?php } ?>
