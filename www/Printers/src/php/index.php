@@ -13,11 +13,11 @@
         <div style="display: inline;">
             <p style="width: 100px;">
                 <label for="ascending">Ascendant</label>
-                <input type="radio" name="order" id="ascending" value="ascending">
+                <input type="radio" name="order" id="ascending" value="ASC" required>
             </p>
             <p style="width: 100px;">
                 <label for="descending">Descendant</label>
-                <input type="radio" name="order" id="descending" value="descending">
+                <input type="radio" name="order" id="descending" value="DESC" required>
             </p>
         </div>
         <button name="sorting" value="brand">Par marques</button>
