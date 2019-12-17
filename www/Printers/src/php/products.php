@@ -1,3 +1,15 @@
+<?php
+
+/**
+ * @author Kévin Mury
+ * @email kevin.mury@eduvaud.ch
+ * @create date 2019-12-03 10:17:02
+ * @modify date 2019-12-17 09:28:47
+ * @desc [description]
+ */
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -10,33 +22,38 @@
 
 <body>
     <?php
+    include_once("util.php");
     include_once("database.php");
-    $db = new Database();
+    $db = new database();
     $data = array();
+
+    var_dump($db->printersByBrand());
 
     switch ($_POST["sorting"]) {
         case "brand":
-            echo 'Par marques';
+            //var_dump($db->printersByBrand());
+            $data = $db->printersByBrand();
+            var_dump($data);
             break;
         case "size":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
-            echo 'Taille';
+            $data = $db->printersBySize($order);
             break;
         case "weight":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
-            echo 'Poids';
+            $data = $db->printersByWeight($order);
             break;
         case "manufacturer":
             echo 'Par constructeurs';
@@ -46,27 +63,28 @@
             break;
         case "printSpeedBW":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
-            echo 'Vitesse impression NB';
+            $data = $db->printersByBWSpeed();
             break;
         case "printSpeedCol":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
                 $order = 'ASC';
             }
             echo 'Vitesse impression Couleur';
+            $data = $db->printersByColSpeed();
             break;
         case "scanResolution":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
@@ -76,7 +94,7 @@
             break;
         case "topPrice":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
@@ -86,7 +104,7 @@
             break;
         case "priceAndManufacturer":
             $order;
-            if (isset($_POST["order"]) and !empty($_POST["order"])) {
+            if (exists($_POST["order"])) {
                 $order = $_POST["order"];
                 $order = (($order == 'ASC') or ($order == 'DESC')) ? $order : 'ASC';
             } else {
@@ -98,7 +116,7 @@
             echo 'Valeur inconnue';
     }
 
-    if (isset($data) and !empty($data)) {
+    if (exists($data)) {
         $_SESSION["data"] = $data;
         ?>
 
@@ -139,7 +157,7 @@
                 <?php } ?>
             </ul>
         <?php } else {
-            echo 'Aucune donnée trouvées';
+            echo 'Aucune donnée trouvée';
         }
         ?>
 </body>

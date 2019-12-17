@@ -4,23 +4,22 @@
  * @author Nicolas Benitez, Alexandre Jaquier
  * @email nicolas.benitez@eduvaud.ch, alexandre.jaquier@eduvaud.ch
  * @create date 2019-12-03 10:44:40
- * @modify date 2019-12-10 08:44:28
- * @desc [classe database pour les requêtes SQL]
+ * @modify date 2019-12-17 09:32:44
+ * @desc [classe database pour les requêtes SQL // database class for SQL queries]
  */
 
 class database
 {
-
     protected $connector;
     protected $req;
     public $result;
     protected $printBaseInfo = "t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS \"priPrice\" ";
     protected $printBaseJoin = "NATURAL JOIN t_brand
     NATURAL JOIN t_manufacturer
-    NATURAL JOIN t_history";
+    LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct";
 
     /**
-     * Constructeur de la classe database
+     * Constructeur de la classe database // database class constructor
      */
     function __construct()
     {
@@ -32,7 +31,7 @@ class database
     }
 
     /**
-     * Déstructeur de la classe database
+     * Déstructeur de la classe database // database class destructor
      */
     function __destruct()
     {
@@ -40,7 +39,7 @@ class database
     }
 
     /**
-     * Fonction d'exécution d'une requête SQL non préparée
+     * Fonction d'exécution d'une requête SQL non préparée // non prepared query execute function
      *
      * @param [string] $query
      * @return void
@@ -54,8 +53,8 @@ class database
     }
 
     /**
-     * Fonction d'exécution d'une requête SQL préparée
-     * À utiliser pour éviter l'injection SQL
+     * Fonction d'exécution d'une requête SQL préparée // prepared query execute function
+     * À utiliser pour éviter l'injection SQL // use to avoid SQL injection
      * @param [string] $query
      * @param [array] $values
      * @return void
@@ -66,28 +65,12 @@ class database
         foreach ($values as $value) {
             $this->req->bindValue($value['name'], $value['value'], $value['type']);
         }
+        echo $query;
         $this->req->execute();
     }
 
-    /* EXEMPLE DE REQUÊTE UTILISANT LE PREPARE
-     function getTeacherSection($id)
-    {
-        $request = ('SELECT s.secName
-        FROM t_section s
-        JOIN t_teach ON s.idSection = t_teach.idSection
-        WHERE t_teach.idTeacher = :id');
-        $toBind = array(array(
-            'name' => 'id',
-            'value' => $id,
-            'type' => PDO::PARAM_INT
-        ));
-        $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_COLUMN);
-    }
-     */
-
     /**
-     * Traite et transforme le résultat d'une query selon les besoins
+     * Traite et transforme le résultat d'une query selon les besoins // Process and transform the result of a query as needed
      *
      * @param [string] $mode
      * @return void
@@ -99,7 +82,7 @@ class database
     }
 
     /**
-     * Vide le jeu d'enregistrements
+     * Vide le jeu d'enregistrements // Empty the recordset
      *
      * @return void
      */
@@ -111,19 +94,19 @@ class database
     }
 
     /**
-     * Récupère les informations générales d'une imprimante
+     * Récupère les informations générales d'une imprimante // Retrieve general informations of a printer
      *
      * @return void
      */
     function getPrinterDetail($idPrinter)
     {
-        $request = 'SELECT p.*,t_brand.braName,t_manufacturer.manName ,GROUP_CONCAT(DISTINCT t_consumable.idConsumable SEPARATOR ", ") "idsCon" , 
-        (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = p.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice" 
-        FROM t_product p
+        $request = 'SELECT t_product.*,t_brand.braName,t_manufacturer.manName ,GROUP_CONCAT(DISTINCT t_consumable.idConsumable SEPARATOR ", ") AS "idsCon" , 
+        (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "proPrice" 
+        FROM t_product
         NATURAL JOIN t_use
         NATURAL JOIN t_consumable
         :printBaseJoin
-        WHERE p.idProduct = :idPrinter';
+        WHERE t_product.idProduct = :idPrinter';
 
         $toBind = array(
             array(
@@ -142,27 +125,30 @@ class database
     }
 
     /**
-     * Récupère les informations générales d'un consommable
+     * Récupère les informations générales d'un consommable // Retrieve general information of a consumable
      *
      * @return void
      */
-    function getConsumableDetail(){
+    function getConsumableDetail()
+    {
         $request = 'SELECT t_consumable.idConsumable, t_consumable.conName, t_consumable.conType, t_brand.braName, t_consumable.conPrice FROM t_consumable
         NATURAL JOIN t_brand';
         $this->queryExecute($request);
         return $this->fetchData(PDO::FETCH_ASSOC);
     }
 
+
     /**
-     * Récupère et classe les imprimantes par vitesse d'impression noir/blanc
+     * Récupère et classe les imprimantes par vitesse d'impression noir/blanc // Retrieve and classified printers by 
+     * black/white print speed
      *
      * @return void
      */
     function printersByBWSpeed()
     {
-        $request = 'SELECT :printBaseInfo, p.proPrintSpeedBW FROM t_product p 
+        $request = 'SELECT :printBaseInfo, t_product.proPrintSpeedBW FROM t_product  
         :printBaseJoin
-        ORDER BY p.proPrintSpeedBW LIMIT 10';
+        ORDER BY t_product.proPrintSpeedBW LIMIT 10';
         $toBind = array(
             array(
                 'name' => 'printBaseInfo',
@@ -180,17 +166,22 @@ class database
     }
 
     /**
-     * Récupère et classe les imprimantes par marques
+     * Récupère et classe les imprimantes par vitesse d'impression noir/blanc // Retrieve and classified printers by 
+     * color print speed
      *
      * @return void
      */
-    function printersByBrand()
+    function printersByColSpeed()
     {
-        $request = 'SELECT t_product.*, t_brand.braName,t_manufacturer.braName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = p.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice"  
-        FROM t_product p
+        $request = 'SELECT :printBaseInfo, t_product.proPrintSpeedCol FROM t_product 
         :printBaseJoin
-        ORDER BY t_product.idBrand';
+        ORDER BY t_product.proPrintSpeedBW LIMIT 10';
         $toBind = array(
+            array(
+                'name' => 'printBaseInfo',
+                'value' => $this->printBaseInfo,
+                'type' => PDO::PARAM_STR
+            ),
             array(
                 'name' => 'printBaseJoin',
                 'value' => $this->printBaseJoin,
@@ -202,20 +193,75 @@ class database
     }
 
     /**
-     * Récupère et classe les imprimantes par taille
+     * Récupère et classe les imprimantes par marques // Retrieve and classifies printers by brand
+     *
+     * @return void
+     */
+    function printersByBrand()
+    {
+        /*
+        $request = 'SELECT t_product.*, t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice"  
+        FROM t_product
+        :printBaseJoin
+        ORDER BY t_product.idBrand';
+        */
+
+        $request = 'SELECT DISTINCT t_product.*, t_brand.braName, t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice"  
+        FROM t_product
+        :printBaseJoin
+        ORDER BY t_product.idBrand';
+
+        $toBind = array(
+            array(
+                'name' => 'printBaseJoin',
+                'value' => $this->printBaseJoin,
+                'type' => PDO::PARAM_STR
+            )
+        );
+        $this->prepareExecute($request, $toBind);
+        //echo 'REQ ' . $request;
+        //echo 'BIND ';
+        //var_dump($toBind);
+        //echo 'DATA ';
+        //var_dump($this->fetchData(PDO::FETCH_ASSOC));
+        return $this->fetchData(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Récupère et classe les imprimantes par taille // Retrieve and classifies printers by size
      *
      * @param [string] $order
      * @return void
      */
     function printersBySize($order)
     {
-        $request = 'PD';
-        $this->queryExecute($request);
+        $request = 'SELECT t_product.proPrintResX,t_product.proPrintResY,:printBaseInfo FROM t_product 
+        :printBaseJoin
+        ORDER BY t_product.proPrintResX * t_product.proPrintResY :order';
+        
+        $toBind = array(
+            array(
+                'name' => 'printBaseInfo',
+                'value' => $this->printBaseInfo,
+                'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'printBaseJoin',
+                'value' => $this->printBaseJoin,
+                'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'order',
+                'value' => $order,
+                'type' => PDO::PARAM_STR
+            )
+        );
+        $this->prepareExecute($request, $toBind);
         return $this->fetchData(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Récupère et classe les imprimantes par poids
+     * Récupère et classe les imprimantes par poids // Retrieve and classifies printers by weight
      *
      * @param [string] $order
      * @return void
@@ -224,7 +270,7 @@ class database
     {
         $request = 'SELECT :printBaseInfo, t_product.proWeight FROM t_product
         :printBaseJoin
-        ORDER BY t_product.proWeight ' . $order;
+        ORDER BY t_product.proWeight :order';
         $toBind = array(
             array(
                 'name' => 'printBaseInfo',
@@ -235,14 +281,20 @@ class database
                 'name' => 'printBaseJoin',
                 'value' => $this->printBaseJoin,
                 'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'order',
+                'value' => $order,
+                'type' => PDO::PARAM_STR
             )
+            
         );
         $this->prepareExecute($request, $toBind);
         return $this->fetchData(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Récupère la date et la valeur d'un prix pour montrer son évolution
+     * Récupère la date et la valeur d'un prix pour montrer son évolution // Retrieve the date and value of a price to show its evolution
      *
      * @return void
      */
@@ -276,24 +328,24 @@ class database
      * Récupère le prix actuel d'un produit
      *
      * @return void
-     *//*
-    function getActualPrice(){
-        $request = 'SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = 1 ORDER BY t_history.hisDate DESC LIMIT 1';
-        $this->queryExecute($request);
-        return $this->fetchData(PDO::FETCH_ASSOC);
-    }*/
+     *
+     * function getActualPrice(){
+     * $request = 'SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = 1 ORDER BY t_history.hisDate DESC LIMIT 1';
+     * $this->queryExecute($request);
+     * return $this->fetchData(PDO::FETCH_ASSOC);
+     * */
 
     /**
-     * Récupère les trois produits les plus chers
+     * Récupère les trois produits les plus chers // Retrieve the three most expensive printers
      *
      * @param [string] $order
      * @return void
      */
     function getExpensivePrinters($order)
     {
-        $request = 'SELECT :printBaseInfo, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = p.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) FROM t_product p 
+        $request = 'SELECT :printBaseInfo, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) FROM t_product p 
         :printBaseJoin
-        GROUP BY p.idProduct ORDER BY t_history.hisPrice ' . $order . ' LIMIT 3';
+        GROUP BY t_product.idProduct ORDER BY t_history.hisPrice :order LIMIT 3';
         $toBind = array(
             array(
                 'name' => 'printBaseInfo',
@@ -304,6 +356,11 @@ class database
                 'name' => 'printBaseJoin',
                 'value' => $this->printBaseJoin,
                 'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'order',
+                'value' => $order,
+                'type' => PDO::PARAM_STR
             )
         );
         $this->prepareExecute($request, $toBind);
@@ -311,9 +368,9 @@ class database
     }
 
     /**
-     * Récupère les consommables compatibles avec un produit
+     * Récupère les consommables compatibles avec un produit // Retrieve all consumables compatible with a printer
      *
-     * @param [string] $printer
+     * @param [string] $idPrinter
      * @return void
      */
     function getConsumablesPrinters($idPrinter)
@@ -323,7 +380,7 @@ class database
         NATURAL JOIN t_use
         :printBaseJoin
         WHERE t_use.idProduct = :idPrinter';
-        
+
         $toBind = array(
             array(
                 'name' => 'idPrinter',
@@ -346,7 +403,7 @@ class database
     }
 
     /**
-     * Récupère les 5 meilleurs produits en fonction de leur statistiques de ventes sur les trois ans
+     * Récupère les 5 meilleurs produits en fonction de leur statistiques de ventes sur les trois ans // Retrieve the five best products based on their sales statistics over the last three years
      *
      * @return void
      */
@@ -358,21 +415,75 @@ class database
     }
 
     /**
+     * Récupère une string d'imprimante compatible avec un idConsumable // Retrieve some information of a consumable and a list of all compatible printers
+     *
+     * @param [int] $idConsumable
+     * @return void
+     */
+    function getPrintersAndConsumables($idProduct,$orderCol,$order)
+    {
+        $toBind = array(
+            array(
+                'name' => 'orderCol',
+                'value' => $orderCol,
+                'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'order',
+                'value' => $order,
+                'type' => PDO::PARAM_STR
+            )
+        );
+        if($idProduct == 0){
+            $whereClause = "";
+        }
+        else{
+            $whereClause = "WHERE t_product.idProduct = :idProduct";
+            $valueID = array(
+                'name' => 'idProduct',
+                'value' => $idProduct,
+                'type' => PDO::PARAM_INT
+            );
+            array_push($toBind,$valueID);
+        }
+
+        $request = 'SELECT t_product.proName, t_brand.braName,
+        GROUP_CONCAT(DISTINCT conName SEPARATOR ", ") AS "Consumables"
+        FROM t_consumable
+        NATURAL JOIN t_product
+        NATURAL JOIN t_brand
+        '.$whereClause.'
+        GROUP BY t_product.proName
+        ORDER BY :orderCol :order';
+        
+        $this->prepareExecute($request, $toBind);
+        return $this->fetchData(PDO::FETCH_ASSOC);
+    }
+
+
+    /**
      * Undocumented function
      *
      * @param [type] $idConsumable
      * @return void
      */
-    function getConsumableAndPrinters($idConsumable){
+    function getConsumablesAndPrinters($idConsumable){
         $request = 'SELECT conName, conType, t_brand.braName, conPrice,
         GROUP_CONCAT(DISTINCT t_product.proName SEPARATOR ", ") AS "Printers"
         FROM t_consumable
         NATURAL JOIN t_product
         NATURAL JOIN t_brand
-        WHERE t_consumable.idConsumable = 1
+        WHERE t_consumable.idConsumable = :idConsumable
         GROUP BY conName
         ORDER BY conName';
-
+        $toBind = array(
+            
+            array(
+                'name' => 'idConsumable',
+                'value' => $idConsumable,
+                'type' => PDO::PARAM_STR
+            ),
+        );
     $this->prepareExecute($request, $toBind);
     return $this->fetchData(PDO::FETCH_ASSOC);
     }
