@@ -25,12 +25,12 @@ if(isset($_GET['idPrinter'])){
         echo "DEBUG CASE 00";
         if(isset($_POST['Column']) && isset($_POST['ordering'])){
             echo "DEBUG CASE 000";
-            $allConsumables = $db->getPrintersAndConsumables( $_GET['idPrinter'], $_POST['Column'], $_POST['ordering']);
+            $allConsumables = $db->getConsumableFromOrdering( $_GET['idPrinter'], $_POST['Column'], $_POST['ordering']);
         }
     }
     else {
         echo "DEBUG CASE 01";
-        $allConsumables = $db->getPrintersAndConsumables($_GET['idPrinter'], 'conName', 'ASC');
+        $allConsumables = $db->getConsumableFromOrdering($_GET['idPrinter'], 'conName', 'ASC');
     }
     //$allConsumables = $db->getPrintersAndConsumable();
 }
@@ -41,12 +41,12 @@ else{
         echo "DEBUG CASE 10";
         if(isset($_POST['Column']) && isset($_POST['ordering'])){
             echo "DEBUG CASE 110";
-            $allConsumables = $db->getPrintersAndConsumables(0, $_POST['Column'], $_POST['ordering']);
+            $allConsumables = $db->getConsumableFromOrdering(0, $_POST['Column'], $_POST['ordering']);
         }
     }
     else {
         echo "DEBUG CASE 11";
-        $allConsumables = $db->getPrintersAndConsumables(0 , 'conName', 'ASC');
+        $allConsumables = $db->getConsumableFromOrdering(0 , 'conName', 'ASC');
     }
     //$allConsumables = $db->getConsumableDetail();
 }
@@ -78,7 +78,7 @@ else{
                 Ordonner par
             </h3>
                 Colonne:<br>
-                <input type="radio" name="Column" value="idBrand" checked> Marque<br>
+                <input type="radio" name="Column" value="braName" checked> Marque<br>
                 <input type="radio" name="Column" value="conName"> Nom<br>
                 <input type="radio" name="Column" value="conType"> Type<br>
                 <input type="radio" name="Column" value="idPrinter"> Compatible<br>
@@ -106,18 +106,24 @@ else{
         
             if(isset($allConsumables)){
                 echo "DEBUG CASE A0";
-                var_dump($allConsumables);
+                //var_dump($allConsumables);
                 foreach ($allConsumables as $consumable) {
-                    var_dump($consumable);
+                    //var_dump($consumable);
                     if(isset($consumable)){
-                        $compatiblePrinters = $db->getConsumablesAndPrinters($consumable['idConsumable']);
-                        var_dump($compatiblePrinters);
+                        //$compatiblePrinters = $db->getConsumablesAndPrinters($consumable['idConsumable']);
+                        //var_dump($compatiblePrinters);
                         echo '<tr>' .
-                            '<td>' . $consumable['conName'] . '</td>' .
                             '<td>' . $consumable['braName'] . '</td>' .
+                            '<td>' . $consumable['conName'] . '</td>' .
                             '<td>' . $consumable['conType'] . '</td>';
-                        if(isset($compatiblePrinters[0])){
-                            echo '<td>' . $compatiblePrinters[0] . '</td>';
+                        //if(isset($compatiblePrinters[0]['Printers'])){
+                        //    echo '<td>' . $compatiblePrinters[0]['Printers'] . '</td>';
+                        //}
+                        if(isset($consumable['Printers'])){
+                            echo '<td>' . $consumable['Printers'] . '</td>';
+                        }
+                        else{
+                            echo '<td>' . '</td>';
                         }
                         echo '<td>' . $consumable['conPrice'] . '</td>' .
                             '</tr>';

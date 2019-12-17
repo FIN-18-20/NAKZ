@@ -13,10 +13,6 @@ class database
     protected $connector;
     protected $req;
     public $result;
-    protected $printBaseInfo = "t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS \"priPrice\" ";
-    protected $printBaseJoin = "NATURAL JOIN t_brand
-    NATURAL JOIN t_manufacturer
-    LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct";
 
     /**
      * Constructeur de la classe database // database class constructor
@@ -65,7 +61,6 @@ class database
         foreach ($values as $value) {
             $this->req->bindValue($value['name'], $value['value'], $value['type']);
         }
-        echo $query;
         $this->req->execute();
     }
 
@@ -75,9 +70,20 @@ class database
      * @param [string] $mode
      * @return void
      */
-    function fetchData($mode)
+    function fetchAllData($mode)
     {
-        $result = $this->req->fetchALL($mode);
+        $result = $this->req->fetchAll($mode);
+        return $result;
+    }
+
+    /**
+     * Traite et transforme le résultat d'une query selon les besoins // Process and transform the result of a query as needed
+     *
+     * @param [type] $mode
+     * @return void
+     */
+    function fetchData($mode) {
+        $result = $this->req->fetch($mode);
         return $result;
     }
 
@@ -105,7 +111,9 @@ class database
         FROM t_product
         NATURAL JOIN t_use
         NATURAL JOIN t_consumable
-        :printBaseJoin
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         WHERE t_product.idProduct = :idPrinter';
 
         $toBind = array(
@@ -114,11 +122,6 @@ class database
                 'value' => $idPrinter,
                 'type' => PDO::PARAM_INT
             ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
         );
         $this->prepareExecute($request, $toBind);
         return $this->fetchData(PDO::FETCH_ASSOC);
@@ -144,25 +147,15 @@ class database
      *
      * @return void
      */
-    function printersByBWSpeed()
+    function printersByBWSpeed($order)
     {
-        $request = 'SELECT :printBaseInfo, t_product.proPrintSpeedBW FROM t_product  
-        :printBaseJoin
-        ORDER BY t_product.proPrintSpeedBW LIMIT 10';
-        $toBind = array(
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
-        );
-        $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        $request = 'SELECT t_product.idProduct, t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "proPrice", t_product.proPrintSpeedBW FROM t_product  
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
+        ORDER BY t_product.proPrintSpeedBW ' . $order . ' LIMIT 10';
+        $this->queryExecute($request);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -171,25 +164,16 @@ class database
      *
      * @return void
      */
-    function printersByColSpeed()
+    function printersByColSpeed($order)
     {
-        $request = 'SELECT :printBaseInfo, t_product.proPrintSpeedCol FROM t_product 
-        :printBaseJoin
-        ORDER BY t_product.proPrintSpeedBW LIMIT 10';
-        $toBind = array(
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
-        );
-        $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        $request = 'SELECT t_product.idProduct, t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "proPrice", t_product.proPrintSpeedCol FROM t_product 
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
+        ORDER BY t_product.proPrintSpeedBW ' . $order . ' LIMIT 10';
+        
+        $this->queryExecute($request);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -200,31 +184,25 @@ class database
     function printersByBrand()
     {
         /*
-        $request = 'SELECT t_product.*, t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice"  
+        $request = 'SELECT t_product.*, t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "proPrice"  
         FROM t_product
         :printBaseJoin
         ORDER BY t_product.idBrand';
         */
 
-        $request = 'SELECT DISTINCT t_product.*, t_brand.braName, t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice"  
+        $request = 'SELECT DISTINCT t_product.*, t_brand.braName, t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "proPrice"  
         FROM t_product
-        :printBaseJoin
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         ORDER BY t_product.idBrand';
-
-        $toBind = array(
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
-        );
-        $this->prepareExecute($request, $toBind);
+        $this->queryExecute($request);
         //echo 'REQ ' . $request;
         //echo 'BIND ';
         //var_dump($toBind);
         //echo 'DATA ';
-        //var_dump($this->fetchData(PDO::FETCH_ASSOC));
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        //var_dump($this->fetchAllData(PDO::FETCH_ASSOC));
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -235,21 +213,13 @@ class database
      */
     function printersBySize($order)
     {
-        $request = 'SELECT t_product.proPrintResX,t_product.proPrintResY,:printBaseInfo FROM t_product 
-        :printBaseJoin
+        $request = 'SELECT t_product.proPrintResX,t_product.proPrintResY,t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice" FROM t_product 
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         ORDER BY t_product.proPrintResX * t_product.proPrintResY :order';
         
         $toBind = array(
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            ),
             array(
                 'name' => 'order',
                 'value' => $order,
@@ -257,7 +227,7 @@ class database
             )
         );
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -268,20 +238,12 @@ class database
      */
     function printersByWeight($order)
     {
-        $request = 'SELECT :printBaseInfo, t_product.proWeight FROM t_product
-        :printBaseJoin
+        $request = 'SELECT t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice", t_product.proWeight FROM t_product
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         ORDER BY t_product.proWeight :order';
         $toBind = array(
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            ),
             array(
                 'name' => 'order',
                 'value' => $order,
@@ -290,7 +252,7 @@ class database
             
         );
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -300,8 +262,10 @@ class database
      */
     function priceEvolution($idPrinter)
     {
-        $request = 'SELECT :printBaseInfo,t_history.hisPrice, t_history.hisDate FROM t_history 
-        :printBaseJoin
+        $request = 'SELECT t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice",t_history.hisPrice, t_history.hisDate FROM t_history 
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         WHERE t_history.idProduct = :idPrinter ORDER BY t_history.hisDate ASC';
         $toBind = array(
             array(
@@ -309,19 +273,9 @@ class database
                 'value' => $idPrinter,
                 'type' => PDO::PARAM_INT
             ),
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
         );
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -332,7 +286,7 @@ class database
      * function getActualPrice(){
      * $request = 'SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = 1 ORDER BY t_history.hisDate DESC LIMIT 1';
      * $this->queryExecute($request);
-     * return $this->fetchData(PDO::FETCH_ASSOC);
+     * return $this->fetchAllData(PDO::FETCH_ASSOC);
      * */
 
     /**
@@ -343,20 +297,12 @@ class database
      */
     function getExpensivePrinters($order)
     {
-        $request = 'SELECT :printBaseInfo, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) FROM t_product p 
-        :printBaseJoin
+        $request = 'SELECT t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice", (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) FROM t_product p 
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         GROUP BY t_product.idProduct ORDER BY t_history.hisPrice :order LIMIT 3';
         $toBind = array(
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            ),
             array(
                 'name' => 'order',
                 'value' => $order,
@@ -364,7 +310,7 @@ class database
             )
         );
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -375,10 +321,12 @@ class database
      */
     function getConsumablesPrinters($idPrinter)
     {
-        $request = 'SELECT :printBaseInfo, t_consumable.conName, t_consumable.conType, t_consumable.conPrice FROM t_product p
+        $request = 'SELECT t_product.proName,t_brand.braName,t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice", t_consumable.conName, t_consumable.conType, t_consumable.conPrice FROM t_product p
         NATURAL JOIN t_consumable
         NATURAL JOIN t_use
-        :printBaseJoin
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_manufacturer
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
         WHERE t_use.idProduct = :idPrinter';
 
         $toBind = array(
@@ -387,19 +335,9 @@ class database
                 'value' => $idPrinter,
                 'type' => PDO::PARAM_STR
             ),
-            array(
-                'name' => 'printBaseInfo',
-                'value' => $this->printBaseInfo,
-                'type' => PDO::PARAM_STR
-            ),
-            array(
-                'name' => 'printBaseJoin',
-                'value' => $this->printBaseJoin,
-                'type' => PDO::PARAM_STR
-            )
         );
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -409,9 +347,14 @@ class database
      */
     function getBestPrinters()
     {
-        $request = '';
+        $request = 'SELECT t_product.proName,t_brand.braName,COUNT(t_purchase.idProduct) AS "nbPurchases",t_manufacturer.manName, (SELECT t_history.hisPrice FROM t_history WHERE t_history.idProduct = t_product.idProduct ORDER BY t_history.hisDate DESC LIMIT 1) AS "priPrice" FROM t_product
+        NATURAL JOIN t_purchase
+        NATURAL JOIN t_brand
+        LEFT JOIN t_history ON t_history.idProduct = t_product.idProduct
+        NATURAL JOIN t_manufacturer
+        LIMIT 5';
         $this->queryExecute($request);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -457,7 +400,7 @@ class database
         ORDER BY :orderCol :order';
         
         $this->prepareExecute($request, $toBind);
-        return $this->fetchData(PDO::FETCH_ASSOC);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 
 
@@ -485,6 +428,51 @@ class database
             ),
         );
     $this->prepareExecute($request, $toBind);
-    return $this->fetchData(PDO::FETCH_ASSOC);
+    return $this->fetchAllData(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $idProduct
+     * @param [type] $orderCol
+     * @param [type] $order
+     * @return void
+     */
+    function getConsumableFromOrdering($idProduct,$orderCol,$order){
+        $toBind = array(
+            array(
+                'name' => 'orderCol',
+                'value' => $orderCol,
+                'type' => PDO::PARAM_STR
+            ),
+            array(
+                'name' => 'order',
+                'value' => $order,
+                'type' => PDO::PARAM_STR
+            )
+        );
+        if($idProduct == 0){
+            $whereClause = "";
+        }
+        else{
+            $whereClause = "WHERE t_product.idProduct = :idProduct";
+            $valueID = array(
+                'name' => 'idProduct',
+                'value' => $idProduct,
+                'type' => PDO::PARAM_INT
+            );
+            array_push($toBind,$valueID);
+        }
+
+        $request = 'SELECT DISTINCT t_consumable.idConsumable, t_consumable.conName, t_consumable.conPrice, t_consumable.conType, t_brand.braName
+        FROM t_consumable
+        NATURAL JOIN t_brand
+        NATURAL JOIN t_product
+        '.$whereClause.'
+        ORDER BY :orderCol :order';
+        
+        $this->prepareExecute($request, $toBind);
+        return $this->fetchAllData(PDO::FETCH_ASSOC);
     }
 }

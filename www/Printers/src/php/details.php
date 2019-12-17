@@ -11,16 +11,16 @@
 include_once("util.php");
 
 include_once("database.php");
-$db = new Database();
+$db = new database();
 
 $title = 'Page de produit';
 $product;
 
-$error = false;
+$error = true;
 
 if (exists($_GET["idProduct"])) {
-    //fetch product data
-    //$product = ;
+    $idProduct = $_GET["idProduct"];
+    $product = $db->getPrinterDetail($idProduct);
 
     if (exists($product)) {
         $productManufacturer = secure($product["manName"]);
@@ -42,6 +42,8 @@ if (exists($_GET["idProduct"])) {
         $productHeight = secure($product["proHeight"]);
         $productWidth = secure($product["proWidth"]);
         $productPrice = secure($product["proPrice"]);
+
+        $error = false;
     }
 }
 
@@ -66,22 +68,33 @@ if (!empty($productName)) {
         <div>
             <h1><?= $productBrand . ' ' . $productName ?></h1>
 
-            <p>Prix: <?= $productPrice ?> </p>
-            <p>Constructeur: <?= $productManufacturer ?> </p>
 
-            <p> Résolution d'impression: <?= $productPrintResX . 'x' . $productPrintResY ?> </p>
-            <p> Recto-verso: <?= $productRectoVerso ?> </p>
-            <p> Vitesse d'impression NB: <?= $productPrintSpeedBW ?> </p>
-            <p> Couleur: <?= $productColour ?> </p>
-            <p> Vitesse d'impression couleur: <?= $productPrintSpeedCol ?> </p>
-            <p> Technologie d'impression <?= $productPrintTech ?> </p>
-            <p> Vitesse de scan NB: <?= $productScanSpeedBW ?> </p>
-            <p> Vitesse de scan couleur: <?= $productScanSpeedCol ?> </p>
-            <p> Résolution de scan: <?= $productScanResX . 'x' . $productScanResY ?> </p>
-            <p> Poids: <?= $productWeight ?> </p>
-            <p> Dimensions: <?= $productLength . 'x' . $productHeight . 'x' . $productWidth ?> </p>
+            <p>Constructeur: <?= $productManufacturer ?> </p>
+            <p>Prix: <?= $productPrice ?> CHF</p>
 
             <div>
+                <h4>Impression:</h4>
+                <p> Technologie d'impression: <?= $productPrintTech ?> </p>
+                <p> Couleur: <?= $productColour == 'Y' ? "Oui" : "Non" ?> </p>
+                <p> Recto-verso: <?= $productRectoVerso == 'Y' ? "Oui" : "Non" ?> </p>
+                <p> Vitesse d'impression NB: <?= $productPrintSpeedBW ?> pages/min</p>
+                <p> Vitesse d'impression couleur: <?= $productPrintSpeedCol ?> pages/min</p>
+                <p> Résolution d'impression: <?= $productPrintResX . 'x' . $productPrintResY ?> dpi</p>
+            </div>
+            <div>
+                <h4>Scan</h4>
+                <p> Vitesse de scan NB: <?= $productScanSpeedBW ?> pages/min</p>
+                <p> Vitesse de scan couleur: <?= $productScanSpeedCol ?> pages/min</p>
+                <p> Résolution de scan: <?= $productScanResX . 'x' . $productScanResY ?> dpi</p>
+            </div>
+            <div>
+                <h4>Dimensions</h4>
+                <p> Poids: <?= $productWeight ?> kg</p>
+                <p> Dimensions: <?= $productLength . 'cm x' . $productHeight . 'cm x' . $productWidth . 'cm' ?> </p>
+            </div>
+
+            <div>
+                <h4>Produits associés</h4>
                 <p>Consommables:</p>
 
             </div>

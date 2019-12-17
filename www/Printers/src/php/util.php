@@ -35,5 +35,3 @@ function secure($data) : string
     }
     return '';
 }
-
-?>

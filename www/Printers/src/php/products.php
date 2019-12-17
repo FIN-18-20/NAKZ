@@ -27,13 +27,9 @@
     $db = new database();
     $data = array();
 
-    var_dump($db->printersByBrand());
-
     switch ($_POST["sorting"]) {
         case "brand":
-            //var_dump($db->printersByBrand());
             $data = $db->printersByBrand();
-            var_dump($data);
             break;
         case "size":
             $order;
@@ -56,10 +52,10 @@
             $data = $db->printersByWeight($order);
             break;
         case "manufacturer":
-            echo 'Par constructeurs';
+
             break;
         case "top5Sell":
-            echo 'Meilleures ventes';
+
             break;
         case "printSpeedBW":
             $order;
@@ -69,7 +65,7 @@
             } else {
                 $order = 'ASC';
             }
-            $data = $db->printersByBWSpeed();
+            $data = $db->printersByBWSpeed($order);
             break;
         case "printSpeedCol":
             $order;
@@ -80,7 +76,7 @@
                 $order = 'ASC';
             }
             echo 'Vitesse impression Couleur';
-            $data = $db->printersByColSpeed();
+            $data = $db->printersByColSpeed($order);
             break;
         case "scanResolution":
             $order;
@@ -90,7 +86,6 @@
             } else {
                 $order = 'ASC';
             }
-            echo 'Résolution scan';
             break;
         case "topPrice":
             $order;
@@ -100,7 +95,6 @@
             } else {
                 $order = 'ASC';
             }
-            echo '3 top prix';
             break;
         case "priceAndManufacturer":
             $order;
@@ -110,7 +104,6 @@
             } else {
                 $order = 'ASC';
             }
-            echo 'Par constructeurs ET prix';
             break;
         default;
             echo 'Valeur inconnue';
@@ -125,7 +118,7 @@
                     <li>
                         <article>
                             <h1><?= $product["braName"] . ' ' . $product["proName"] ?></h1>
-                            <p><?= $product["proManufacturer"] ?></p>
+                            <p><?= $product["manName"] ?></p>
                             <?php
                                     switch ($_POST["sorting"]) {
                                         case "size":
@@ -148,9 +141,9 @@
                                     }
                                     ?>
                                 <p><?= $product["proPrice"] . ' CHF' ?></p>
-                                <p>
+                                <p></p>
                                     <a href="details.php?idProduct=<?= $product["idProduct"] ?>">Détails</a>
-                                    <a href="consumables.php?idConsumable=<?= $product["idConsumable"] ?>">Consommables</a>
+                                    <!-- <a href="consumables.php?idConsumable=<?= $product["idConsumable"] ?>">Consommables</a> -->
                                 </p>
                         </article>
                     </li>
